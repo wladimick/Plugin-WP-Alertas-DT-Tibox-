@@ -5,8 +5,10 @@ class ADT_Activator {
 
     public static function activate(): void {
         ADT_Database::create_table();
+        ADT_Account_Activation::create_table();
         ADT_Roles::ensure_role();
         ADT_Portal::ensure_pages();
+        ADT_Account_Activation::ensure_page();
 
         if ( ! get_option( 'adt_api_token' ) ) {
             update_option( 'adt_api_token', ADT_Settings::generate_token(), false );
@@ -30,8 +32,10 @@ class ADT_Activator {
 
         if ( ! $version_ok || ! $schema_ok ) {
             ADT_Database::create_table();
+            ADT_Account_Activation::create_table();
             ADT_Roles::ensure_role();
             ADT_Portal::ensure_pages();
+            ADT_Account_Activation::ensure_page();
             update_option( 'adt_plugin_version', ADT_VERSION );
             flush_rewrite_rules( false );
         }
@@ -66,6 +70,7 @@ class ADT_Activator {
             ADT_Database::get_subscriptions_table(),
             ADT_Database::get_payments_table(),
             ADT_Database::get_events_table(),
+            ADT_Account_Activation::table(),
         ] as $table ) {
             $found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
             if ( $found !== $table ) {
