@@ -103,10 +103,12 @@ class ADT_Subscriptions {
             return false;
         }
 
-        $status = self::STATUS_CANCEL_AT_PERIOD_END;
-        if ( self::STATUS_TRIALING === $subscription['status'] ) {
-            $status = self::STATUS_CANCEL_AT_PERIOD_END;
-        }
+        // En prueba se conserva el estado trialing para mantener el acceso hasta
+        // trial_end_at. En una suscripción pagada se usa el estado explícito de
+        // término programado hasta subscription_end_at.
+        $status = self::STATUS_TRIALING === $subscription['status']
+            ? self::STATUS_TRIALING
+            : self::STATUS_CANCEL_AT_PERIOD_END;
 
         $updated = ADT_Database::update_subscription( (int) $subscription['id'], [
             'status'               => $status,
@@ -240,10 +242,11 @@ class ADT_Subscriptions {
         $now = time();
         if ( self::STATUS_TRIALING === $subscription['status'] && ! empty( $subscription['trial_end_at'] ) ) {
             if ( strtotime( $subscription['trial_end_at'] . ' UTC' ) < $now ) {
-                ADT_Database::update_subscription( (int) $subscription['id'], [
-                    'status' => self::STATUS_AWAITING_PAYMENT,
-                ] );
-                $subscription['status'] = self::STATUS_AWAITING_PAYMENT;
+                $next_status = ! empty( $subscription['cancel_at_period_end'] )
+                    ? self::STATUS_EXPIRED
+                    : self::STATUS_AWAITING_PAYMENT;
+                ADT_Database::update_subscription( (int) $subscription['id'], [ 'status' => $next_status ] );
+                $subscription['status'] = $next_status;
             }
         }
 
