@@ -9,6 +9,7 @@ class ADT_Activator {
         ADT_Roles::ensure_role();
         ADT_Portal::ensure_pages();
         ADT_Account_Activation::ensure_page();
+        ADT_Page_Manager::ensure_pages();
 
         if ( ! get_option( 'adt_api_token' ) ) {
             update_option( 'adt_api_token', ADT_Settings::generate_token(), false );
@@ -36,6 +37,7 @@ class ADT_Activator {
             ADT_Roles::ensure_role();
             ADT_Portal::ensure_pages();
             ADT_Account_Activation::ensure_page();
+            ADT_Page_Manager::ensure_pages();
             update_option( 'adt_plugin_version', ADT_VERSION );
             flush_rewrite_rules( false );
         }
