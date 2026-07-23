@@ -48,17 +48,19 @@ class ADT_Admin {
             wp_die( 'Sin permisos.' );
         }
 
-        $notice       = sanitize_text_field( wp_unslash( $_GET['adt_notice'] ?? '' ) );
-        $token        = ADT_Settings::get_token();
-        $masked       = $token ? substr( $token, 0, 8 ) . str_repeat( '•', 20 ) : '(sin token)';
-        $total        = ADT_Database::count();
-        $active       = ADT_Database::count( 'active' );
-        $eligible     = ADT_Database::count_eligible();
-        $last_sync    = ADT_Settings::get_last_sync() ?: '—';
-        $base_url     = rest_url( ADT_REST::NAMESPACE );
-        $account_url  = ADT_Portal::account_url();
-        $register_url = ADT_Portal::register_url();
-        $login_url    = ADT_Portal::login_url();
+        $notice         = sanitize_text_field( wp_unslash( $_GET['adt_notice'] ?? '' ) );
+        $token          = ADT_Settings::get_token();
+        $masked         = $token ? substr( $token, 0, 8 ) . str_repeat( '•', 20 ) : '(sin token)';
+        $total          = ADT_Database::count();
+        $active         = ADT_Database::count( 'active' );
+        $eligible       = ADT_Database::count_eligible();
+        $pending_links  = ADT_Account_Activation::pending_count();
+        $last_sync      = ADT_Settings::get_last_sync() ?: '—';
+        $base_url       = rest_url( ADT_REST::NAMESPACE );
+        $account_url    = ADT_Portal::account_url();
+        $register_url   = ADT_Portal::register_url();
+        $login_url      = ADT_Portal::login_url();
+        $activation_url = ADT_Account_Activation::activation_url();
 
         $reveal_token = get_transient( self::reveal_key() );
         if ( $reveal_token ) {
@@ -110,7 +112,7 @@ class ADT_Admin {
                     <h2>Portal de clientes</h2>
                     <p><span class="adt-badge adt-badge--ok">Preparado</span></p>
                     <p class="adt-muted">Prueba gratuita: <?php echo esc_html( ADT_Subscriptions::TRIAL_DAYS ); ?> días</p>
-                    <p class="adt-muted">Pago anual: simulado en esta etapa</p>
+                    <p class="adt-muted">Enlaces de activación vigentes: <?php echo esc_html( $pending_links ); ?></p>
                 </div>
                 <div class="adt-card">
                     <h2>Sincronización</h2>
@@ -122,11 +124,23 @@ class ADT_Admin {
             <div class="adt-section">
                 <h2>Páginas del portal</h2>
                 <table class="form-table">
-                    <tr><th>Registro</th><td><a href="<?php echo esc_url( $register_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $register_url ); ?></a><br><code>[alertas_dt_register]</code></td></tr>
+                    <tr><th>Registro nuevo</th><td><a href="<?php echo esc_url( $register_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $register_url ); ?></a><br><code>[alertas_dt_register]</code></td></tr>
+                    <tr><th>Activar suscriptor existente</th><td><a href="<?php echo esc_url( $activation_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $activation_url ); ?></a><br><code>[alertas_dt_activate_account]</code></td></tr>
                     <tr><th>Inicio de sesión</th><td><a href="<?php echo esc_url( $login_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $login_url ); ?></a><br><code>[alertas_dt_login]</code></td></tr>
                     <tr><th>Mi cuenta</th><td><a href="<?php echo esc_url( $account_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $account_url ); ?></a><br><code>[alertas_dt_account]</code></td></tr>
                     <tr><th>Formulario heredado</th><td><code>[alertas_dt_form]</code></td></tr>
                 </table>
+            </div>
+
+            <div class="adt-section">
+                <h2>Activación segura de cuentas históricas</h2>
+                <p>Los suscriptores existentes deben demostrar control del correo mediante un enlace de un solo uso antes de crear contraseña y vincular su usuario WordPress.</p>
+                <ul>
+                    <li>El token vence en 60 minutos.</li>
+                    <li>Solo se almacena el hash SHA-256 del token.</li>
+                    <li>Un enlace utilizado o reemplazado deja de ser válido.</li>
+                    <li>Las solicitudes públicas usan respuesta genérica para no revelar correos registrados.</li>
+                </ul>
             </div>
 
             <div class="adt-section">
