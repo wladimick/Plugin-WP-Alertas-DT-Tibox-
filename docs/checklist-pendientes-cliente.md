@@ -11,6 +11,7 @@
 - [ ] Avisos antes del fin de prueba.
 - [ ] Avisos antes del vencimiento anual.
 - [ ] Confirmar que la renovación seguirá siendo manual.
+- [ ] Definir desde cuándo comienza la prueba para suscriptores históricos que activen su cuenta.
 
 ## Cuenta y perfil
 
@@ -22,6 +23,8 @@
 - [ ] Textos de términos y privacidad.
 - [ ] Consentimiento para email y WhatsApp.
 - [ ] Tratamiento de comunicaciones operacionales después del opt-out.
+- [ ] Texto definitivo del correo de activación para suscriptores históricos.
+- [ ] Campaña o invitación inicial para activar cuentas existentes.
 
 ## Pago
 
@@ -66,9 +69,9 @@
 ## Antes de producción
 
 - [ ] Staging separado.
-- [ ] Verificación de correo.
-- [ ] Activación segura de suscriptores históricos.
-- [ ] Rate limiting.
+- [ ] Verificación de correo para registros nuevos.
+- [ ] Validar en staging la activación segura de suscriptores históricos.
+- [ ] Rate limiting adicional de login y recuperación.
 - [ ] Revisión legal.
 - [ ] Pruebas de seguridad.
 - [ ] Respaldos y plan de reversa.
