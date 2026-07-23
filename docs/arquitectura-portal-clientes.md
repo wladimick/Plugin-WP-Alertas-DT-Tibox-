@@ -1,7 +1,7 @@
 # Arquitectura del portal de clientes
 
 **Estado:** borrador implementable  
-**Versión del plugin:** 0.3.1  
+**Versión del plugin:** 0.3.2  
 **Fuente oficial:** `wladimick/Plugin-WP-Alertas-DT-Tibox-`  
 **Última actualización:** 23-07-2026
 
@@ -17,17 +17,26 @@
 - Cobertura tras pago aprobado: 12 meses.
 - Webpay Plus y Lioren se integrarán en ramas posteriores.
 - Los suscriptores históricos deben verificar su correo mediante un enlace de un solo uso antes de crear su cuenta.
+- Todas las páginas privadas y transaccionales se agrupan bajo `/alertas-dt/`.
 
-## Páginas creadas
+## Páginas creadas automáticamente
 
-| Página | Slug | Shortcode |
+| Página | Slug | Shortcode/función |
 |---|---|---|
-| Registro Alertas DT | `/registro-alertas-dt/` | `[alertas_dt_register]` |
-| Activar cuenta histórica | `/activar-cuenta-alertas-dt/` | `[alertas_dt_activate_account]` |
-| Ingresar a Alertas DT | `/ingresar-alertas-dt/` | `[alertas_dt_login]` |
-| Mi cuenta Alertas DT | `/mi-cuenta-alertas-dt/` | `[alertas_dt_account]` |
+| Acceso al portal | `/alertas-dt/` | `[alertas_dt_login]` |
+| Crear cuenta | `/alertas-dt/crear-cuenta/` | `[alertas_dt_register]` |
+| Activar cuenta histórica | `/alertas-dt/activar-cuenta/` | `[alertas_dt_activate_account]` |
+| Ingresar | `/alertas-dt/ingresar/` | `[alertas_dt_login]` |
+| Mi cuenta | `/alertas-dt/mi-cuenta/` | `[alertas_dt_account]` |
+| Contratar plan | `/alertas-dt/contratar/` | `[alertas_dt_checkout]` |
+| Resultado del pago | `/alertas-dt/resultado-pago/` | `[alertas_dt_payment_result]` |
+| Recuperar contraseña | `/alertas-dt/recuperar-contrasena/` | `[alertas_dt_recovery]` |
 
-El shortcode heredado `[alertas_dt_form]` se mantiene para no interrumpir la captura actual de suscriptores.
+El plugin crea únicamente las páginas que falten. Si ya existe una página administrada por el plugin, conserva su ID y la mueve al árbol definitivo. No sobreescribe contenido personalizado: solo repone el shortcode cuando la página está vacía o contiene exclusivamente un shortcode propio.
+
+Las URLs antiguas del prototipo redirigen mediante HTTP 301 a las nuevas rutas.
+
+El shortcode heredado `[alertas_dt_form]` se mantiene para no interrumpir la captura actual de suscriptores en la landing pública.
 
 ## Responsabilidades
 
