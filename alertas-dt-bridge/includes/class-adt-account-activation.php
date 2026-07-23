@@ -212,7 +212,12 @@ class ADT_Account_Activation {
         }
 
         update_user_meta( (int) $user_id, 'adt_phone', (string) ( $subscriber['phone'] ?? '' ) );
-        self::link_subscriber_to_user( (int) $subscriber['id'], (int) $user_id );
+        if ( ! self::link_subscriber_to_user( (int) $subscriber['id'], (int) $user_id ) ) {
+            require_once ABSPATH . 'wp-admin/includes/user.php';
+            wp_delete_user( (int) $user_id );
+            self::redirect( 'activation_failed', $token );
+        }
+
         $subscription = ADT_Subscriptions::ensure_trial( (int) $user_id, (int) $subscriber['id'] );
 
         self::mark_all_used( (int) $subscriber['id'] );
@@ -349,7 +354,7 @@ class ADT_Account_Activation {
     private static function insert_token( int $subscriber_id, string $token, string $ip ): bool {
         global $wpdb;
         $now     = current_time( 'mysql', true );
-        $expires = gmdate( 'Y-m-d H:i:s', strtotime( '+' . self::TOKEN_TTL_SECONDS . ' seconds', strtotime( $now ) ) );
+        $expires = gmdate( 'Y-m-d H:i:s', time() + self::TOKEN_TTL_SECONDS );
 
         return false !== $wpdb->insert(
             self::table(),
@@ -416,7 +421,7 @@ class ADT_Account_Activation {
     private static function cleanup_tokens(): void {
         global $wpdb;
         $table  = self::table();
-        $cutoff = gmdate( 'Y-m-d H:i:s', strtotime( '-' . self::TOKEN_RETENTION_DAYS . ' days', time() ) );
+        $cutoff = gmdate( 'Y-m-d H:i:s', time() - ( self::TOKEN_RETENTION_DAYS * DAY_IN_SECONDS ) );
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$table} WHERE (used_at IS NOT NULL AND used_at < %s) OR expires_at < %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -435,9 +440,9 @@ class ADT_Account_Activation {
         return true;
     }
 
-    private static function link_subscriber_to_user( int $subscriber_id, int $user_id ): void {
+    private static function link_subscriber_to_user( int $subscriber_id, int $user_id ): bool {
         global $wpdb;
-        $wpdb->update(
+        return false !== $wpdb->update(
             ADT_Database::get_table(),
             [
                 'wp_user_id' => $user_id,
@@ -474,12 +479,12 @@ class ADT_Account_Activation {
     private static function query_notice(): string {
         $key = sanitize_key( wp_unslash( $_GET['adt_notice'] ?? '' ) );
         $messages = [
-            'activation_requested'       => [ 'Si el correo está registrado y aún no tiene cuenta, enviaremos un enlace de activación.', 'success' ],
-            'activation_required'        => [ 'Ese correo ya estaba suscrito. Activa tu cuenta mediante un enlace seguro.', 'warning' ],
-            'invalid_activation_password'=> [ 'Las contraseñas deben coincidir y tener al menos 10 caracteres.', 'error' ],
-            'invalid_or_expired_token'   => [ 'El enlace de activación no es válido o ya venció. Solicita uno nuevo.', 'error' ],
-            'account_already_exists'     => [ 'Ya existe una cuenta con ese correo. Inicia sesión o recupera tu contraseña.', 'warning' ],
-            'activation_failed'          => [ 'No pudimos activar la cuenta. Intenta nuevamente o solicita otro enlace.', 'error' ],
+            'activation_requested'        => [ 'Si el correo está registrado y aún no tiene cuenta, enviaremos un enlace de activación.', 'success' ],
+            'activation_required'         => [ 'Ese correo ya estaba suscrito. Activa tu cuenta mediante un enlace seguro.', 'warning' ],
+            'invalid_activation_password' => [ 'Las contraseñas deben coincidir y tener al menos 10 caracteres.', 'error' ],
+            'invalid_or_expired_token'    => [ 'El enlace de activación no es válido o ya venció. Solicita uno nuevo.', 'error' ],
+            'account_already_exists'      => [ 'Ya existe una cuenta con ese correo. Inicia sesión o recupera tu contraseña.', 'warning' ],
+            'activation_failed'           => [ 'No pudimos activar la cuenta. Intenta nuevamente o solicita otro enlace.', 'error' ],
         ];
         if ( ! $key || empty( $messages[ $key ] ) ) {
             return '';
