@@ -33,7 +33,7 @@ Los suscriptores existentes no pueden vincularse escribiendo solamente su correo
 6. El usuario se vincula a la fila histórica sin duplicarla.
 7. Comienza la prueba de 15 días.
 
-La respuesta pública es siempre genérica para no revelar qué correos están registrados.
+La respuesta pública es siempre genérica para no revelar qué correos están registrados. El diseño técnico completo está en `docs/activacion-segura-cuentas-historicas.md`.
 
 ## Instalación en staging
 
