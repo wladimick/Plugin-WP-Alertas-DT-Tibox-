@@ -4,7 +4,7 @@ Plugin WordPress de External Group para capturar suscriptores, administrar cuent
 
 ## Versión de esta rama
 
-`0.3.1` — portal de clientes con activación segura de suscriptores históricos.
+`0.3.2` — portal de clientes con activación segura y páginas automáticas agrupadas bajo `/alertas-dt/`.
 
 ## Funcionalidades
 
@@ -13,6 +13,7 @@ Plugin WordPress de External Group para capturar suscriptores, administrar cuent
 - Activación segura de cuenta existente `[alertas_dt_activate_account]`.
 - Inicio de sesión `[alertas_dt_login]`.
 - Mi cuenta `[alertas_dt_account]`.
+- Páginas preparadas para contratación, resultado de pago y recuperación.
 - Rol `alertas_dt_customer` sin acceso a `wp-admin`.
 - Prueba gratuita de 15 días.
 - Preferencias de email y WhatsApp.
@@ -21,11 +22,37 @@ Plugin WordPress de External Group para capturar suscriptores, administrar cuent
 - Pago anual simulado solo fuera de producción.
 - API REST compatible con la aplicación Python.
 
+## Páginas automáticas
+
+Al activar o actualizar el plugin se crean únicamente las páginas que falten. Las páginas existentes se reutilizan y conservan su ID. Si una página anterior del plugin ya existe, se mueve al nuevo árbol sin duplicarla.
+
+```text
+/alertas-dt/
+/alertas-dt/crear-cuenta/
+/alertas-dt/activar-cuenta/
+/alertas-dt/ingresar/
+/alertas-dt/mi-cuenta/
+/alertas-dt/contratar/
+/alertas-dt/resultado-pago/
+/alertas-dt/recuperar-contrasena/
+```
+
+Las URLs antiguas del prototipo redirigen hacia las nuevas:
+
+```text
+/registro-alertas-dt/
+/activar-cuenta-alertas-dt/
+/ingresar-alertas-dt/
+/mi-cuenta-alertas-dt/
+```
+
+El plugin no reemplaza contenido personalizado de una página existente. Solo establece el shortcode cuando la página está vacía o contiene exclusivamente un shortcode propio de Alertas DT.
+
 ## Activación de suscriptores históricos
 
 Los suscriptores existentes no pueden vincularse escribiendo solamente su correo en el registro normal. Deben demostrar acceso a esa casilla:
 
-1. Solicitan un enlace en `/activar-cuenta-alertas-dt/`.
+1. Solicitan un enlace en `/alertas-dt/activar-cuenta/`.
 2. WordPress envía un token de un solo uso al correo registrado.
 3. Solo se almacena el hash SHA-256 del token.
 4. El enlace vence en 60 minutos.
@@ -41,11 +68,7 @@ La respuesta pública es siempre genérica para no revelar qué correos están r
 2. Subir la carpeta `alertas-dt-bridge` a `wp-content/plugins/`.
 3. Activar o actualizar el plugin.
 4. Visitar **Alertas DT + SII** en el administrador.
-5. Confirmar las páginas creadas:
-   - `/registro-alertas-dt/`
-   - `/activar-cuenta-alertas-dt/`
-   - `/ingresar-alertas-dt/`
-   - `/mi-cuenta-alertas-dt/`
+5. Confirmar la estructura automática bajo `/alertas-dt/`.
 6. Confirmar que los suscriptores existentes siguen visibles.
 7. Confirmar la tabla `wp_alertas_dt_activation_tokens`.
 
