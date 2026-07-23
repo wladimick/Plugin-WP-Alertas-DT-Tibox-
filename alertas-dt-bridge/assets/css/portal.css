@@ -1,0 +1,212 @@
+/* Alertas DT + SII — Portal de clientes */
+.adt-portal {
+  --adt-primary: #29b78d;
+  --adt-primary-dark: #219a74;
+  --adt-navy: #0c2735;
+  --adt-text: #1c2833;
+  --adt-muted: #64748b;
+  --adt-border: #dbe3e8;
+  --adt-bg: #f5f8fa;
+  --adt-danger: #b42318;
+  --adt-warning: #a15c00;
+  width: min(1120px, calc(100% - 32px));
+  margin: 40px auto;
+  color: var(--adt-text);
+  font-family: Montserrat, Lato, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.adt-portal--narrow { width: min(540px, calc(100% - 32px)); }
+
+.adt-portal *, .adt-portal *::before, .adt-portal *::after { box-sizing: border-box; }
+
+.adt-portal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.adt-portal__header h1,
+.adt-portal__card h2 {
+  color: var(--adt-navy);
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.adt-portal__header p { margin: 4px 0; color: var(--adt-muted); }
+
+.adt-portal__eyebrow,
+.adt-portal__label {
+  display: block;
+  color: var(--adt-primary-dark);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.adt-portal__summary-grid,
+.adt-portal__grid {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.adt-portal__summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.adt-portal__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.adt-portal__card {
+  background: #fff;
+  border: 1px solid var(--adt-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(15, 39, 53, .06);
+  padding: 24px;
+}
+
+.adt-portal__card > p { color: var(--adt-muted); line-height: 1.6; }
+.adt-portal__card small { display: block; color: var(--adt-muted); margin-top: 5px; }
+
+.adt-portal__status {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #edf7f4;
+  color: #166b52;
+}
+
+.adt-portal__status--awaiting_payment,
+.adt-portal__status--past_due,
+.adt-portal__status--cancel_at_period_end { background: #fff4df; color: #8a5200; }
+.adt-portal__status--expired,
+.adt-portal__status--blocked { background: #feeeee; color: #9e1c16; }
+.adt-portal__status--paused { background: #edf0f2; color: #52606b; }
+
+.adt-portal__form {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.adt-portal__form label:not(.adt-portal__check) {
+  display: grid;
+  gap: 7px;
+  font-weight: 600;
+  font-size: .9rem;
+}
+
+.adt-portal input[type="text"],
+.adt-portal input[type="email"],
+.adt-portal input[type="password"],
+.adt-portal input[type="tel"],
+.adt-portal select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--adt-border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--adt-text);
+  padding: 9px 12px;
+  font: inherit;
+}
+
+.adt-portal input:focus,
+.adt-portal select:focus {
+  border-color: var(--adt-primary);
+  outline: 3px solid rgba(41, 183, 141, .16);
+  outline-offset: 0;
+}
+
+.adt-portal input:disabled { background: #f3f5f6; color: #64748b; }
+
+.adt-portal__check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--adt-text);
+  font-size: .9rem;
+  line-height: 1.45;
+}
+
+.adt-portal__check input { margin-top: 3px; accent-color: var(--adt-primary); }
+
+.adt-portal__button,
+.adt-portal #wp-submit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--adt-primary);
+  border-radius: 9px;
+  background: var(--adt-primary);
+  color: #fff;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.adt-portal__button:hover,
+.adt-portal #wp-submit:hover { background: var(--adt-primary-dark); border-color: var(--adt-primary-dark); color: #fff; }
+.adt-portal__button:focus-visible,
+.adt-portal #wp-submit:focus-visible { outline: 3px solid rgba(41, 183, 141, .3); outline-offset: 2px; }
+.adt-portal__button--block { width: 100%; }
+.adt-portal__button--secondary { background: #fff; color: var(--adt-navy); border-color: var(--adt-border); }
+.adt-portal__button--secondary:hover { background: #f2f6f7; color: var(--adt-navy); border-color: #c8d4d9; }
+.adt-portal__button--danger { background: #fff; color: var(--adt-danger); border-color: #e5aaa6; }
+.adt-portal__button--danger:hover { background: #fff2f1; color: var(--adt-danger); border-color: #d9807a; }
+
+.adt-portal__notice {
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin-bottom: 18px;
+  border: 1px solid;
+  font-weight: 600;
+}
+.adt-portal__notice--success { background: #eaf8f3; border-color: #a7decf; color: #146d52; }
+.adt-portal__notice--warning { background: #fff6e7; border-color: #efd3a5; color: #8a5200; }
+.adt-portal__notice--error { background: #fff0ef; border-color: #efb4af; color: #9e1c16; }
+
+.adt-portal__subscription {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .7fr);
+  gap: 28px;
+  margin-bottom: 18px;
+}
+
+.adt-portal__actions { display: grid; gap: 14px; align-content: start; }
+.adt-portal__actions form { display: grid; gap: 9px; }
+.adt-portal__alert { background: #fff6e7; border-left: 4px solid #d99024; padding: 10px 12px; color: #7c4d0b !important; }
+
+.adt-portal__table-wrap { overflow-x: auto; }
+.adt-portal__table { width: 100%; border-collapse: collapse; min-width: 620px; }
+.adt-portal__table th,
+.adt-portal__table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--adt-border); }
+.adt-portal__table th { color: var(--adt-muted); font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; }
+
+.adt-portal__fineprint,
+.adt-portal__links { color: var(--adt-muted); font-size: .85rem; line-height: 1.55; }
+.adt-portal__links { display: flex; gap: 8px; flex-wrap: wrap; }
+.adt-portal a:not(.adt-portal__button) { color: #1977a8; }
+
+.adt-portal .login-username,
+.adt-portal .login-password,
+.adt-portal .login-remember { display: grid; gap: 7px; }
+.adt-portal .login-remember label { display: flex; gap: 8px; align-items: center; }
+
+@media (max-width: 820px) {
+  .adt-portal__summary-grid,
+  .adt-portal__grid,
+  .adt-portal__subscription { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .adt-portal { width: min(100% - 20px, 1120px); margin: 24px auto; }
+  .adt-portal__header { flex-direction: column; }
+  .adt-portal__card { padding: 18px; border-radius: 12px; }
+  .adt-portal__button { width: 100%; }
+}
