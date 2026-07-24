@@ -4,7 +4,7 @@ Plugin WordPress de External Group para capturar suscriptores, administrar cuent
 
 ## Versión de esta rama
 
-`0.3.2` — portal de clientes con activación segura y páginas automáticas agrupadas bajo `/alertas-dt/`.
+`0.3.3` — portal de clientes con activación segura, páginas automáticas y correcciones detectadas en staging.
 
 ## Funcionalidades
 
@@ -21,6 +21,15 @@ Plugin WordPress de External Group para capturar suscriptores, administrar cuent
 - Modelo de pagos y auditoría.
 - Pago anual simulado solo fuera de producción.
 - API REST compatible con la aplicación Python.
+
+## Ajustes de QA 0.3.3
+
+- Una cuenta administradora ya no puede recibir una prueba o suscripción por visitar Mi cuenta.
+- Las acciones de perfil, notificaciones, baja y pago simulado exigen el rol de cliente.
+- Los usuarios WordPress vinculados con un rol distinto de cliente quedan excluidos de la elegibilidad REST.
+- Un cliente autenticado que visita `/alertas-dt/`, crear cuenta o ingresar es enviado directamente a Mi cuenta.
+- Durante la prueba aparece el botón `Contratar plan anual`.
+- Los botones principales refuerzan el verde de External Group frente a estilos globales del tema.
 
 ## Páginas automáticas
 
@@ -71,6 +80,7 @@ La respuesta pública es siempre genérica para no revelar qué correos están r
 5. Confirmar la estructura automática bajo `/alertas-dt/`.
 6. Confirmar que los suscriptores existentes siguen visibles.
 7. Confirmar la tabla `wp_alertas_dt_activation_tokens`.
+8. Probar con un usuario `Cliente Alertas DT`, no con la cuenta administradora.
 
 La actualización ejecuta `dbDelta()` y no elimina las filas históricas.
 
