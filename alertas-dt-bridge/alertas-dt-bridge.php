@@ -3,7 +3,7 @@
  * Plugin Name:       Alertas DT + SII Portal
  * Plugin URI:        https://github.com/wladimick/Plugin-WP-Alertas-DT-Tibox-
  * Description:       Suscripción, portal de clientes y API REST para sincronización con Alertas DT + SII.
- * Version:           0.3.2
+ * Version:           0.3.3
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            External Group
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ADT_VERSION',                  '0.3.2' );
+define( 'ADT_VERSION',                  '0.3.3' );
 define( 'ADT_PLUGIN_FILE',              __FILE__ );
 define( 'ADT_PLUGIN_DIR',               plugin_dir_path( __FILE__ ) );
 define( 'ADT_PLUGIN_URL',               plugin_dir_url( __FILE__ ) );
@@ -30,6 +30,7 @@ require_once ADT_PLUGIN_DIR . 'includes/class-adt-payments.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-portal.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-account-activation.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-page-manager.php';
+require_once ADT_PLUGIN_DIR . 'includes/class-adt-portal-qa.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-roles.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-activator.php';
 require_once ADT_PLUGIN_DIR . 'includes/class-adt-shortcode.php';
@@ -49,6 +50,7 @@ add_action( 'plugins_loaded', function () {
     ADT_Portal::register();
     ADT_Account_Activation::register();
     ADT_Page_Manager::register();
+    ADT_Portal_QA::register();
     ADT_REST::register();
 
     if ( is_admin() ) {
