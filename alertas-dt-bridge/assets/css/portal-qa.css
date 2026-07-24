@@ -1,0 +1,48 @@
+/* Ajustes detectados durante las pruebas de staging en externalgroup.cl */
+.adt-portal button.adt-portal__button,
+.adt-portal a.adt-portal__button,
+.adt-portal input[type="submit"],
+.adt-portal #wp-submit {
+  background-color: var(--adt-primary) !important;
+  border-color: var(--adt-primary) !important;
+  color: #fff !important;
+}
+
+.adt-portal button.adt-portal__button:hover,
+.adt-portal a.adt-portal__button:hover,
+.adt-portal input[type="submit"]:hover,
+.adt-portal #wp-submit:hover {
+  background-color: var(--adt-primary-dark) !important;
+  border-color: var(--adt-primary-dark) !important;
+  color: #fff !important;
+}
+
+.adt-portal a.adt-portal__button--secondary,
+.adt-portal button.adt-portal__button--secondary {
+  background-color: #fff !important;
+  border-color: var(--adt-border) !important;
+  color: var(--adt-navy) !important;
+}
+
+.adt-portal a.adt-portal__button--secondary:hover,
+.adt-portal button.adt-portal__button--secondary:hover {
+  background-color: #f2f6f7 !important;
+  border-color: #c8d4d9 !important;
+  color: var(--adt-navy) !important;
+}
+
+.adt-portal button.adt-portal__button--danger {
+  background-color: #fff !important;
+  border-color: #e5aaa6 !important;
+  color: var(--adt-danger) !important;
+}
+
+.adt-portal button.adt-portal__button--danger:hover {
+  background-color: #fff2f1 !important;
+  border-color: #d9807a !important;
+  color: var(--adt-danger) !important;
+}
+
+.adt-portal__button--subscribe {
+  margin-bottom: 2px;
+}

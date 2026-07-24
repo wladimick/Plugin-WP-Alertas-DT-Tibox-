@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || exit;
 
 class ADT_REST {
 
-    const NAMESPACE = 'alertas-dt/v1';
+    public const NAMESPACE = 'alertas-dt/v1';
 
     public static function register(): void {
         add_action( 'rest_api_init', [ __CLASS__, 'register_routes' ] );
@@ -21,10 +21,11 @@ class ADT_REST {
             'callback'            => [ __CLASS__, 'list_subscribers' ],
             'permission_callback' => [ __CLASS__, 'check_token' ],
             'args'                => [
-                'status'        => [ 'type' => 'string',  'default' => 'active', 'sanitize_callback' => 'sanitize_text_field' ],
-                'updated_after' => [ 'type' => 'string',  'default' => '',       'sanitize_callback' => 'sanitize_text_field' ],
-                'limit'         => [ 'type' => 'integer', 'default' => 100,      'minimum' => 1, 'maximum' => 500 ],
-                'page'          => [ 'type' => 'integer', 'default' => 1,        'minimum' => 1 ],
+                'status'        => [ 'type' => 'string', 'default' => 'active', 'sanitize_callback' => 'sanitize_text_field' ],
+                'updated_after' => [ 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
+                'eligible_only' => [ 'type' => 'boolean', 'default' => false ],
+                'limit'         => [ 'type' => 'integer', 'default' => 100, 'minimum' => 1, 'maximum' => 500 ],
+                'page'          => [ 'type' => 'integer', 'default' => 1, 'minimum' => 1 ],
             ],
         ] );
 
@@ -43,57 +44,70 @@ class ADT_REST {
     public static function health(): WP_REST_Response {
         return new WP_REST_Response( [
             'ok'      => true,
-            'plugin'  => 'alertas-dt-bridge',
+            'plugin'  => 'alertas-dt-portal',
             'version' => ADT_VERSION,
+            'portal'  => true,
         ], 200 );
     }
 
     public static function list_subscribers( WP_REST_Request $request ): WP_REST_Response {
-        $args = [
+        $eligible_only = rest_sanitize_boolean( $request->get_param( 'eligible_only' ) );
+        $args          = [
             'status'        => $request->get_param( 'status' ),
             'updated_after' => $request->get_param( 'updated_after' ),
+            'eligible_only' => $eligible_only,
             'limit'         => (int) $request->get_param( 'limit' ),
             'page'          => (int) $request->get_param( 'page' ),
         ];
 
         $rows  = ADT_Database::list( $args );
-        $total = ADT_Database::count( $args['status'] );
+        $total = $eligible_only
+            ? ADT_Database::count_eligible()
+            : ADT_Database::count( $args['status'] );
 
         $subscribers = array_map( function ( array $row ): array {
             return [
-                'id'               => (int) $row['id'],
-                'email'            => $row['email'],
-                'status'           => $row['status'],
-                'consent'          => (bool) $row['consent'],
-                'consent_at'       => $row['consent_at'] ?? null,
-                'source_page'      => $row['source_page'] ?? null,
-                'source_url'       => $row['source_url']  ?? null,
-                'created_at'       => $row['created_at'],
-                'updated_at'       => $row['updated_at'],
-                'synced_at'        => $row['synced_at'] ?? null,
-                'subscriber_name'  => $row['subscriber_name'] ?? null,
-                'phone'            => $row['phone'] ?? null,
-                'whatsapp_consent' => (bool) ( $row['whatsapp_consent'] ?? false ),
+                'id'                    => (int) $row['id'],
+                'email'                 => $row['email'],
+                'status'                => $row['status'],
+                'consent'               => (bool) $row['consent'],
+                'consent_at'            => $row['consent_at'] ?? null,
+                'source_page'           => $row['source_page'] ?? null,
+                'source_url'            => $row['source_url'] ?? null,
+                'created_at'            => $row['created_at'],
+                'updated_at'            => $row['updated_at'],
+                'synced_at'             => $row['synced_at'] ?? null,
+                'subscriber_name'       => $row['subscriber_name'] ?? null,
+                'phone'                 => $row['phone'] ?? null,
+                'whatsapp_consent'      => (bool) ( $row['whatsapp_consent'] ?? false ),
+                'wp_user_id'            => ! empty( $row['wp_user_id'] ) ? (int) $row['wp_user_id'] : null,
+                'notification_status'   => $row['notification_status'] ?? 'active',
+                'subscription_status'   => $row['subscription_status'] ?? null,
+                'trial_start_at'        => $row['trial_start_at'] ?? null,
+                'trial_end_at'          => $row['trial_end_at'] ?? null,
+                'subscription_start_at' => $row['subscription_start_at'] ?? null,
+                'subscription_end_at'   => $row['subscription_end_at'] ?? null,
+                'cancel_at_period_end'  => (bool) ( $row['cancel_at_period_end'] ?? false ),
+                'eligible_for_alerts'   => ADT_Subscriptions::is_row_eligible( $row ),
+                'legacy_unlinked'       => empty( $row['wp_user_id'] ),
             ];
         }, $rows );
 
         return new WP_REST_Response( [
-            'ok'          => true,
-            'total'       => $total,
-            'page'        => $args['page'],
-            'limit'       => $args['limit'],
-            'subscribers' => $subscribers,
+            'ok'            => true,
+            'total'         => $total,
+            'page'          => $args['page'],
+            'limit'         => $args['limit'],
+            'eligible_only' => $eligible_only,
+            'subscribers'   => $subscribers,
         ], 200 );
     }
 
     public static function mark_synced( WP_REST_Request $request ): WP_REST_Response {
         $body = $request->get_json_params();
+        $ids  = array_filter( array_map( 'intval', (array) ( $body['ids'] ?? [] ) ) );
 
-        $ids = array_filter(
-            array_map( 'intval', (array) ( $body['ids'] ?? [] ) )
-        );
         $synced_at = sanitize_text_field( $body['synced_at'] ?? current_time( 'mysql', true ) );
-
         if ( empty( $ids ) ) {
             return new WP_REST_Response( [ 'ok' => false, 'error' => 'ids requerido.' ], 400 );
         }
